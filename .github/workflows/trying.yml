@@ -1,0 +1,33 @@
+name: Windows VPS Setup
+
+on: [push, workflow_dispatch]
+
+jobs:
+  setup-vps:
+    runs-on: windows-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Enable RDP Access
+        run: |
+          net user github /add /active:yes && net user github chisom.123
+          net localgroup administrators github /add
+          reg add "HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\Terminal Server" /v fDenyTSConnections /t REG_DWORD /d 0 /f
+          netsh advfirewall firewall add rule name="RDP" dir=in action=allow protocol=TCP localport=3389
+          netsh advfirewall set allprofiles state off
+        shell: cmd
+
+      - name: Install Necessary Software
+        run: |
+          choco install -y googlechrome git python3 nodejs
+        shell: powershell
+
+      - name: Display Connection Info
+        run: |
+          $ipv4 = (Invoke-WebRequest -Uri "http://ipinfo.io/ip").Content.Trim()
+          echo "Your RDP IP is: $ipv4"
+          echo "Username: github"
+          echo "Password: chisom.123"
+        shell: powershell
