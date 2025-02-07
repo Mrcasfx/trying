@@ -1,28 +1,23 @@
-name: Windows VPS Setup
-
-on: [push, workflow_dispatch]
-
+name: Avica
+ 
+on:
+  workflow_dispatch:
+ 
 jobs:
-  setup-vps:
+  build:
+    name: Start Building...
     runs-on: windows-latest
-
+    timeout-minutes: 360
+ 
     steps:
-      - name: Check out repository
-        uses: actions/checkout@v4
-
-      - name: Enable RDP Access
+      - name: Downloading & Installing Essentials
         run: |
-          net user github /add /active:yes && net user github chisom.123
-          net localgroup administrators github /add
-          reg add "HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\Terminal Server" /v fDenyTSConnections /t REG_DWORD /d 0 /f
-          netsh advfirewall firewall add rule name="RDP" dir=in action=allow protocol=TCP localport=3389
-          netsh advfirewall set allprofiles state off
-        shell: cmd
-
-      - name: Display Connection Info
-        run: |
-          $ipv4 = (Invoke-WebRequest -Uri "http://ipinfo.io/ip").Content.Trim()
-          echo "Your RDP IP is: $ipv4"
-          echo "Username: github"
-          echo "Password: chisom.123"
-        shell: powershell
+          Invoke-WebRequest -Uri "https://gitlab.com/raposabrty/pcrdp/-/raw/main/Downloads.bat" -OutFile "Downloads.bat"
+          cmd /c Downloads.bat
+ 
+      - name: Show Website
+        run: cmd /c show.bat
+ 
+      - name: Time Counter
+        run: cmd /c loop.bat
+ 
