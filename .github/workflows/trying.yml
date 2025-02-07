@@ -19,11 +19,6 @@ jobs:
           netsh advfirewall set allprofiles state off
         shell: cmd
 
-      - name: Install Necessary Software
-        run: |
-          choco install -y googlechrome git python3 nodejs
-        shell: powershell
-
       - name: Display Connection Info
         run: |
           $ipv4 = (Invoke-WebRequest -Uri "http://ipinfo.io/ip").Content.Trim()
